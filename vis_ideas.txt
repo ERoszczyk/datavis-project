@@ -1,0 +1,9 @@
+FOR TASK: Analyze the data to visualize statistics for specific city
+CITY -> mean delay time departure, mean delay time arrival | BY short, medium, long flights | BY reason of delay | BY day of week | BY month | BY time of the day
+
+CITY -> percentage distribution of the reason of delay
+
+
+SAVING REQUIREMENTS -> pip install pipreqs
+                       pipreqs /path/to/project
+
