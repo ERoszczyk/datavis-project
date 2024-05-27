@@ -44,8 +44,8 @@ dayOfWeek = {1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Frida
 
 def draw_avg_flight_delay_by_delay_type(df, selected_airport, start_date, end_date, start_time, end_time):
     df = df[(df['DATE'] >= start_date) & (df['DATE'] <= end_date) & (
-            pd.to_datetime(df['ARRIVAL_TIME']).dt.time >= start_time) & (
-                    pd.to_datetime(df['ARRIVAL_TIME']).dt.time <= end_time)]
+            pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time >= start_time) & (
+                    pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time <= end_time)]
     df = df[df['ARRIVAL_DELAY'] > 0]
     if selected_airport:
         df = df[df['AIRPORT_x'].str.contains(selected_airport)]
@@ -67,8 +67,8 @@ def draw_avg_flight_delay_by_delay_type(df, selected_airport, start_date, end_da
 
 def draw_monthly_avg_flight_delay_by_month(df, selected_airport, start_date, end_date, start_time, end_time):
     df = df[(df['DATE'] >= start_date) & (df['DATE'] <= end_date) & (
-            pd.to_datetime(df['ARRIVAL_TIME']).dt.time >= start_time) & (
-                    pd.to_datetime(df['ARRIVAL_TIME']).dt.time <= end_time)]
+            pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time >= start_time) & (
+                    pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time <= end_time)]
     df = df[df['ARRIVAL_DELAY'] > 0]
     if selected_airport:
         df = df[df['AIRPORT_x'].str.contains(selected_airport)]
@@ -114,8 +114,8 @@ def draw_monthly_avg_flight_delay_by_month(df, selected_airport, start_date, end
 def draw_avg_flight_delay_by_delay_type_routes(df, dep_airport, arr_airport, start_date, end_date, start_time,
                                                end_time):
     df = df[(df['DATE'] >= start_date) & (df['DATE'] <= end_date) & (
-            pd.to_datetime(df['ARRIVAL_TIME']).dt.time >= start_time) & (
-                    pd.to_datetime(df['ARRIVAL_TIME']).dt.time <= end_time)]
+            pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time >= start_time) & (
+                    pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time <= end_time)]
     if dep_airport and arr_airport:
         df = df[(df['AIRPORT_x'].str.contains(dep_airport)) & (df['AIRPORT_y'].str.contains(arr_airport))]
     # Calculate average delay by delay type
@@ -138,8 +138,8 @@ def draw_avg_flight_delay_by_delay_type_routes(df, dep_airport, arr_airport, sta
 def draw_monthly_avg_flight_delay_by_month_routes(df, dep_airport, arr_airport, start_date, end_date, start_time,
                                                   end_time):
     df = df[(df['DATE'] >= start_date) & (df['DATE'] <= end_date) & (
-            pd.to_datetime(df['ARRIVAL_TIME']).dt.time >= start_time) & (
-                    pd.to_datetime(df['ARRIVAL_TIME']).dt.time <= end_time)]
+            pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time >= start_time) & (
+                    pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time <= end_time)]
     if dep_airport and arr_airport:
         df = df[(df['AIRPORT_x'].str.contains(dep_airport)) & (df['AIRPORT_y'].str.contains(arr_airport))]
 
@@ -185,8 +185,8 @@ def draw_no_flights_by_month(df, airline, start_time, end_time, type):
     # Number of flights by month
     if airline != 'All':
         df = df[df['AIRLINE'].str.contains(airline)]
-    df = df[(pd.to_datetime(df['ARRIVAL_TIME']).dt.time >= start_time) & (
-            pd.to_datetime(df['ARRIVAL_TIME']).dt.time <= end_time)]
+    df = df[(pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time >= start_time) & (
+            pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time <= end_time)]
     if type == 'On Time':
         df = df[df['ARRIVAL_DELAY'] <= 0]
     elif type == 'Delayed':
@@ -229,8 +229,8 @@ def draw_flight_no(df, selected_month, airline, start_time, end_time, type):
     if airline != 'All':
         df = df[df['AIRLINE'].str.contains(airline)]
 
-    df = df[(pd.to_datetime(df['ARRIVAL_TIME']).dt.time >= start_time) & (
-            pd.to_datetime(df['ARRIVAL_TIME']).dt.time <= end_time)]
+    df = df[(pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time >= start_time) & (
+            pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time <= end_time)]
 
     if type == 'On Time':
         df = df[df['ARRIVAL_DELAY'] <= 0]
@@ -277,8 +277,8 @@ def number_of_flights_by_day_of_week(df, selected_month, airline, start_time, en
         df = df[df['MONTH'] == month_name_to_number[selected_month]]
     if airline != 'All':
         df = df[df['AIRLINE'].str.contains(airline)]
-    df = df[(pd.to_datetime(df['ARRIVAL_TIME']).dt.time >= start_time) & (
-            pd.to_datetime(df['ARRIVAL_TIME']).dt.time <= end_time)]
+    df = df[(pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time >= start_time) & (
+            pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time <= end_time)]
 
     if type == 'On Time':
         df = df[df['ARRIVAL_DELAY'] <= 0]
@@ -313,8 +313,8 @@ def number_of_flights_by_day_of_week(df, selected_month, airline, start_time, en
 
 def mean_arr_dep_by_airlines(df, start_date, end_date, start_time, end_time, airlines):
     df = df[(df['DATE'] >= start_date) & (df['DATE'] <= end_date) & (
-            pd.to_datetime(df['ARRIVAL_TIME']).dt.time >= start_time) & (
-                    pd.to_datetime(df['ARRIVAL_TIME']).dt.time <= end_time)]
+            pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time >= start_time) & (
+                    pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time <= end_time)]
 
     if len(airlines) > 0:
         df = df[df['AIRLINE'].isin(airlines)]

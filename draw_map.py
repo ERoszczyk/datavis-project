@@ -11,8 +11,8 @@ scale = [[0.0, 'rgb(0,100,0)'], [0.2, 'rgb(34,139,34)'],
 
 def draw_map_with_mean_delay(df, start_date, end_date, start_time, end_time):
     df = df[(df['DATE'] >= start_date) & (df['DATE'] <= end_date) & (
-            pd.to_datetime(df['ARRIVAL_TIME']).dt.time >= start_time) & (
-                    pd.to_datetime(df['ARRIVAL_TIME']).dt.time <= end_time)]
+            pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time >= start_time) & (
+                    pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time <= end_time)]
     trace = go.Scattergeo(
         lon=df['LONGITUDE_x'],
         lat=df['LATITUDE_x'],

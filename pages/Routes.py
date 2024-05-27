@@ -38,7 +38,8 @@ def reset_filters():
 
 
 def main():
-    df = pd.read_csv('2015_dataset/merged_1k_sample.csv')
+    # df = pd.read_csv('2015_dataset/merged_1k_sample.csv')
+    df = pd.read_csv('2015_dataset/merged_full_dataset.csv')
     start, end, min_time, max_time = display_time_filters()
     dep_cities, arr_cities = display_city_filter(df)
     dep_airport, arr_airport = display_airport_filter(df, dep_cities, arr_cities)

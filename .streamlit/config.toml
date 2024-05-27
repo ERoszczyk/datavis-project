@@ -1,0 +1,4 @@
+# .streamlit/config.toml
+[server]
+maxMessageSize = 4096  # Increase to 4 GB if necessary
+
