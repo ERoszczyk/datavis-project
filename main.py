@@ -29,3 +29,5 @@ show_pages(
         Page("pages/Airlines.py", "Delay By Airlines", "🛫")
     ]
 )
+
+st.rerun()

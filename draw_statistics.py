@@ -205,7 +205,8 @@ def draw_no_flights_by_month(df, airline, start_time, end_time, type):
         y=dff.flight_num,
         marker=dict(
             color=dff.flight_num,
-            colorscale='Reds',
+            colorscale=[[0.0, 'rgb(252,174,145)'], [0.2, 'rgb(251,106,74)'], [0.4, 'rgb(239,59,44)'],
+                        [0.6, 'rgb(203,24,29)'], [0.8, 'rgb(165,15,21)'], [1.0, 'rgb(103,0,13)']],
             showscale=True)
     )
 
@@ -296,7 +297,8 @@ def number_of_flights_by_day_of_week(df, selected_month, airline, start_time, en
         name='Weather',
         marker=dict(
             color=flight_counts['FLIGHT_NUMBER'],
-            colorscale=px.colors.sequential.YlOrRd,
+            colorscale=[[0.0, 'rgb(252,174,145)'], [0.2, 'rgb(251,106,74)'], [0.4, 'rgb(239,59,44)'],
+                        [0.6, 'rgb(203,24,29)'], [0.8, 'rgb(165,15,21)'], [1.0, 'rgb(103,0,13)']],
             showscale=True
         )
     )
@@ -368,8 +370,8 @@ def cancellation_rate_by_airlines(df, start_date, end_date, airlines):
             sizeref=1,
             size=20,
             color=dff.CANCELLED,
-            colorscale=px.colors.sequential.Plotly3,
-            showscale=True
+            colorscale=[[0.0, 'rgb(252,174,145)'], [0.2, 'rgb(251,106,74)'], [0.4, 'rgb(239,59,44)'],
+                        [0.6, 'rgb(203,24,29)'], [0.8, 'rgb(165,15,21)'], [1.0, 'rgb(103,0,13)']],            showscale=True
         )
     )
 

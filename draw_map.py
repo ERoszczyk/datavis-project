@@ -8,7 +8,6 @@ scale = [[0.0, 'rgb(0,100,0)'], [0.2, 'rgb(34,139,34)'],
          [0.4, 'rgb(60,179,60)'], [0.6, 'rgb(173,255,47)'],
          [0.8, 'rgb(255,215,0)'], [1.0, 'rgb(255,99,71)']]
 
-
 def clean_data(df):
     """Clean the dataset by removing or filling NaN values."""
     df = df.dropna(
@@ -16,7 +15,6 @@ def clean_data(df):
     df.loc[:, 'Percentage Delayed'] = pd.to_numeric(df['Percentage Delayed'], errors='coerce').fillna(0)
     df = df.dropna(subset=['Percentage Delayed'])
     return df
-
 
 def draw_map_with_mean_delay(df, start_date, end_date, start_time, end_time):
     df = clean_data(df)
@@ -46,7 +44,8 @@ def draw_map_with_mean_delay(df, start_date, end_date, start_time, end_time):
             cmin=0,
             color=aggregated_df['Percentage Delayed'],
             colorbar=dict(title="Percentage of Delay (%)"),
-            colorscale=px.colors.sequential.YlOrRd,
+            colorscale=[[0.0, 'rgb(252,174,145)'], [0.2, 'rgb(251,106,74)'], [0.4, 'rgb(239,59,44)'],
+                        [0.6, 'rgb(203,24,29)'], [0.8, 'rgb(165,15,21)'], [1.0, 'rgb(103,0,13)']],
             line=dict(
                 color="rgba(102,102,102)",
                 width=1
@@ -60,7 +59,7 @@ def draw_map_with_mean_delay(df, start_date, end_date, start_time, end_time):
         showlegend=False,
         geo=dict(scope='north america',
                  projection=dict(type='natural earth'),
-                 showlakes=True,
+                 showlakes=False,
                  showland=True,
                  lakecolor='rgb(95,145,237)',
                  landcolor='rgb(250,250,250)',
@@ -82,7 +81,6 @@ def draw_map_with_mean_delay(df, start_date, end_date, start_time, end_time):
         airport = aggregated_df.iloc[nr]['AIRPORT_x']
         st.session_state.selected_airport = airport
 
-
 def draw_routes(df, departure_cities, arrival_cities, departure_airports, arrival_airports):
     df = clean_data(df)
     if len(departure_cities) > 0:
@@ -95,83 +93,87 @@ def draw_routes(df, departure_cities, arrival_cities, departure_airports, arriva
         df = df[df['AIRPORT_y'].isin(arrival_airports)]
 
     # Aggregate data by routes
-    aggregated_df = \
-    df.groupby(['AIRPORT_x', 'AIRPORT_y', 'CITY_x', 'CITY_y', 'LATITUDE_x', 'LONGITUDE_x', 'LATITUDE_y', 'LONGITUDE_y'],
-               as_index=False)['ARRIVAL_DELAY'].mean()
+    aggregated_df = df.groupby(
+        ['AIRPORT_x', 'AIRPORT_y', 'CITY_x', 'CITY_y', 'LATITUDE_x', 'LONGITUDE_x', 'LATITUDE_y', 'LONGITUDE_y'],
+        as_index=False)['ARRIVAL_DELAY'].mean()
 
     # draw the airport points in the map
-    data = [dict(type='scattergeo',
-                 lat=aggregated_df['LATITUDE_x'],
-                 lon=aggregated_df['LONGITUDE_x'],
-                 marker=dict(
-                     color='#FFD700',
-                     line=dict(
-                         color="rgba(102,102,102)",
-                         width=1
-                     ),
-                     opacity=0.8,
-                     size=6,
-                 ),
-                 mode='markers',
-                 name='',
-                 )]
-    data += [dict(type='scattergeo',
-                  lat=aggregated_df['LATITUDE_y'],
-                  lon=aggregated_df['LONGITUDE_y'],
-                  marker=dict(
-                      color='#FFD700',
-                      line=dict(
-                          color="rgba(102,102,102)",
-                          width=1
-                      ),
-                      opacity=0.8,
-                      size=6,
-                  ),
-                  mode='markers',
-                  name='',
-                  )]
+    data = [dict(
+        type='scattergeo',
+        lat=aggregated_df['LATITUDE_x'],
+        lon=aggregated_df['LONGITUDE_x'],
+        marker=dict(
+            color='#FFD700',
+            line=dict(
+                color="rgba(102,102,102)",
+                width=1
+            ),
+            opacity=0.8,
+            size=6,
+        ),
+        mode='markers',
+        name='',
+        hoverinfo='skip'  # Disable hoverinfo for points
+    )]
+    data += [dict(
+        type='scattergeo',
+        lat=aggregated_df['LATITUDE_y'],
+        lon=aggregated_df['LONGITUDE_y'],
+        marker=dict(
+            color='#FFD700',
+            line=dict(
+                color="rgba(102,102,102)",
+                width=1
+            ),
+            opacity=0.8,
+            size=6,
+        ),
+        mode='markers',
+        name='',
+        hoverinfo='skip'  # Disable hoverinfo for points
+    )]
 
     # draw the flight route in the map
     for i in range(aggregated_df.shape[0]):
         row = aggregated_df.iloc[i]
         avg_delay = row['ARRIVAL_DELAY']
         data += [dict(
+            type="scattergeo",
             lat=[row['LATITUDE_x'], row['LATITUDE_y']],
+            lon=[row['LONGITUDE_x'], row['LONGITUDE_y']],
+            mode="lines",
+            hoverinfo='text',  # Enable hoverinfo for lines
+            text=('From: ' + row['AIRPORT_x']
+                  + '<br>To: ' + row['AIRPORT_y']
+                  + '<br>Avg. Delay: ' + str(round(avg_delay, 2)) + ' mins'),
             line=dict(
                 color='#4682B4',
                 width=1
             ),
-            lon=[row['LONGITUDE_x'], row['LONGITUDE_y']],
-            mode="lines",
-            text=('From: ' + (row['AIRPORT_x'])
-                  + '<br>To: ' + row['AIRPORT_y']
-                  + '<br>Avg. Delay: '
-                  + str(round(avg_delay, 2))
-                  + ' mins'
-                  ),
             opacity=0.8,
-            name='',
-            type="scattergeo"
+            name=''
         )]
 
     # layout
-    layout = go.Layout(geo=dict(scope='north america',
-                                projection=dict(type="azimuthal equal area"),
-                                showlakes=True,
-                                showland=True,
-                                lakecolor='rgb(95,145,237)',
-                                landcolor='rgb(250,250,250)'
-                                ),
-                       margin=go.layout.Margin(
-                           l=20,
-                           r=80,
-                           b=30,
-                           t=20,
-                           pad=30
-                       ),
-                       autosize=True,
-                       showlegend=False
-                       )
+    layout = go.Layout(
+        geo=dict(
+            scope='north america',
+            projection=dict(type="azimuthal equal area"),
+            showlakes=False,
+            showland=True,
+            lakecolor='rgb(95,145,237)',
+            landcolor='rgb(250,250,250)'
+        ),
+        margin=go.layout.Margin(
+            l=20,
+            r=80,
+            b=30,
+            t=20,
+            pad=30
+        ),
+        autosize=True,
+        showlegend=False
+    )
 
     fig = go.Figure(data=data, layout=layout)
 
@@ -182,3 +184,4 @@ def draw_routes(df, departure_cities, arrival_cities, departure_airports, arriva
         airport_arr = aggregated_df.iloc[nr - 2]['AIRPORT_y']
         st.session_state.route_origin = airport_dep
         st.session_state.route_destination = airport_arr
+
