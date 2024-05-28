@@ -44,8 +44,7 @@ def draw_map_with_mean_delay(df, start_date, end_date, start_time, end_time):
             cmin=0,
             color=aggregated_df['Percentage Delayed'],
             colorbar=dict(title="Percentage of Delay (%)"),
-            colorscale=[[0.0, 'rgb(252,174,145)'], [0.2, 'rgb(251,106,74)'], [0.4, 'rgb(239,59,44)'],
-                        [0.6, 'rgb(203,24,29)'], [0.8, 'rgb(165,15,21)'], [1.0, 'rgb(103,0,13)']],
+            colorscale=px.colors.sequential.YlOrRd,
             line=dict(
                 color="rgba(102,102,102)",
                 width=1

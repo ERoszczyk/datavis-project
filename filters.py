@@ -35,9 +35,15 @@ def display_city_filter(df):
     arr_city_list = list(df['CITY_y'].unique())
     dep_city_list.sort()
     arr_city_list.sort()
-    return st.sidebar.multiselect('Departure city', dep_city_list, key='dep_city'), st.sidebar.multiselect(
-        'Arrival city',
-        arr_city_list, key='arr_city')
+
+    # Default city filter
+    default_dep_city = ['New York']  # Set your default departure city here
+    default_arr_city = []
+
+    dep_cities = st.sidebar.multiselect('Departure city', dep_city_list, default=default_dep_city, key='dep_city')
+    arr_cities = st.sidebar.multiselect('Arrival city', arr_city_list, default=default_arr_city, key='arr_city')
+
+    return dep_cities, arr_cities
 
 
 def display_airport_filter(df, departure_cities, arrival_cities):

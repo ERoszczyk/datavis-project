@@ -48,7 +48,7 @@ def draw_avg_flight_delay_by_delay_type(df, selected_airport, start_date, end_da
                     pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time <= end_time)]
     df = df[df['ARRIVAL_DELAY'] > 0]
     if selected_airport:
-        df = df[df['AIRPORT_x'].str.contains(selected_airport)]
+        df = df[df['AIRPORT_x'] == selected_airport]
     # Calculate average delay by delay type
     average_delay_by_type = df[
         ['ARRIVAL_DELAY', 'DEPARTURE_DELAY', 'AIR_SYSTEM_DELAY', 'SECURITY_DELAY', 'AIRLINE_DELAY',
@@ -71,7 +71,7 @@ def draw_monthly_avg_flight_delay_by_month(df, selected_airport, start_date, end
                     pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time <= end_time)]
     df = df[df['ARRIVAL_DELAY'] > 0]
     if selected_airport:
-        df = df[df['AIRPORT_x'].str.contains(selected_airport)]
+        df = df[df['AIRPORT_x'] == selected_airport]
 
     delay_columns = ['MONTH', 'ARRIVAL_DELAY', 'DEPARTURE_DELAY', 'AIR_SYSTEM_DELAY', 'SECURITY_DELAY', 'AIRLINE_DELAY',
                      'LATE_AIRCRAFT_DELAY',
@@ -113,18 +113,20 @@ def draw_monthly_avg_flight_delay_by_month(df, selected_airport, start_date, end
 
 def draw_avg_flight_delay_by_delay_type_routes(df, dep_airport, arr_airport, start_date, end_date, start_time,
                                                end_time):
-    df = df[(df['DATE'] >= start_date) & (df['DATE'] <= end_date) & (
-            pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time >= start_time) & (
-                    pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time <= end_time)]
+    df = df[(df['DATE'] >= start_date) & (df['DATE'] <= end_date) &
+            (pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time >= start_time) &
+            (pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time <= end_time)]
     if dep_airport and arr_airport:
-        df = df[(df['AIRPORT_x'].str.contains(dep_airport)) & (df['AIRPORT_y'].str.contains(arr_airport))]
+        df = df[(df['AIRPORT_x'] == dep_airport) & (df['AIRPORT_y'] == arr_airport)]
+    df = df[df['ARRIVAL_DELAY'] > 0]
+
     # Calculate average delay by delay type
     average_delay_by_type = df[
         ['ARRIVAL_DELAY', 'DEPARTURE_DELAY', 'AIR_SYSTEM_DELAY', 'SECURITY_DELAY', 'AIRLINE_DELAY',
          'LATE_AIRCRAFT_DELAY', 'WEATHER_DELAY']].mean().round(2)
+
     # Create a bar chart
     title = 'Average Flight Delay By Delay Type'
-
     fig = px.bar(x=['ARRIVAL DELAY', 'DEPARTURE DELAY', 'AIR SYSTEM DELAY', 'SECURITY DELAY', 'AIRLINE DELAY',
                     'LATE AIRCRAFT DELAY', 'WEATHER DELAY'],
                  y=average_delay_by_type.values,
@@ -137,15 +139,15 @@ def draw_avg_flight_delay_by_delay_type_routes(df, dep_airport, arr_airport, sta
 
 def draw_monthly_avg_flight_delay_by_month_routes(df, dep_airport, arr_airport, start_date, end_date, start_time,
                                                   end_time):
-    df = df[(df['DATE'] >= start_date) & (df['DATE'] <= end_date) & (
-            pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time >= start_time) & (
-                    pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time <= end_time)]
+    df = df[(df['DATE'] >= start_date) & (df['DATE'] <= end_date) &
+            (pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time >= start_time) &
+            (pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time <= end_time)]
     if dep_airport and arr_airport:
-        df = df[(df['AIRPORT_x'].str.contains(dep_airport)) & (df['AIRPORT_y'].str.contains(arr_airport))]
+        df = df[(df['AIRPORT_x'] == dep_airport) & (df['AIRPORT_y'] == arr_airport)]
+    df = df[df['ARRIVAL_DELAY'] > 0]
 
     delay_columns = ['MONTH', 'ARRIVAL_DELAY', 'DEPARTURE_DELAY', 'AIR_SYSTEM_DELAY', 'SECURITY_DELAY', 'AIRLINE_DELAY',
-                     'LATE_AIRCRAFT_DELAY',
-                     'WEATHER_DELAY']
+                     'LATE_AIRCRAFT_DELAY', 'WEATHER_DELAY']
     df_delays = df[delay_columns]
 
     # Calculate monthly average delays
@@ -179,7 +181,6 @@ def draw_monthly_avg_flight_delay_by_month_routes(df, dep_airport, arr_airport, 
                   markers='MONTH',
                   height=450, width=600, color_discrete_sequence=px.colors.qualitative.Plotly)
     st.plotly_chart(fig)
-
 
 def draw_no_flights_by_month(df, airline, start_time, end_time, type):
     # Number of flights by month
