@@ -28,6 +28,10 @@ def set_streamlit_page():
     """, unsafe_allow_html=True)
 
 def main():
+    if 'df' not in st.session_state:
+        st.error("Data is not loaded in session state.")
+        return
+
     df = st.session_state.df  # Access the dataset from session state
     start, end, min_time, max_time = display_time_filters()
     st.sidebar.button('Reset filters', on_click=reset_filters)
