@@ -1,8 +1,6 @@
-import datetime
-
-import pandas as pd
 import streamlit as st
-
+import pandas as pd
+import datetime
 from draw_statistics import draw_no_flights_by_month, draw_flight_no, number_of_flights_by_day_of_week
 from filters import display_timeonly_filter, display_type_filter, display_airline_filter
 
@@ -11,6 +9,10 @@ PAGE_ICON = '📅'
 APP_SUB_TITLE = 'Data Visualisation 2023'
 SIDEBAR_TITLE = 'Filter data'
 
+def reset_filters():
+    st.session_state.airline = 'All'
+    st.session_state.time = (datetime.time(0, 0), datetime.time(23, 59))
+    st.session_state.type = 'All'
 
 def set_streamlit_page():
     st.set_page_config(PAGE_TITLE, layout="wide", page_icon=PAGE_ICON)
@@ -24,16 +26,8 @@ def set_streamlit_page():
       </style>
     """, unsafe_allow_html=True)
 
-
-def reset_filters():
-    st.session_state.airline = 'All'
-    st.session_state.time = (datetime.time(0, 0), datetime.time(23, 59))
-    st.session_state.type = 'All'
-
-
 def main():
-    df = pd.read_csv('2015_dataset/merged_full_dataset.csv')
-    # df = pd.read_csv('2015_dataset/merged_1k_sample.csv')
+    df = st.session_state.df  # Access the dataset from session state
     airline_df = pd.read_csv('2015_dataset/airlines.csv')
 
     col1, col2 = st.columns(2)
@@ -66,7 +60,6 @@ def main():
         number_of_flights_by_day_of_week(df, st.session_state.month_selected, airline, start_time, end_time, type)
     else:
         number_of_flights_by_day_of_week(df, 'All', airline, start_time, end_time, type)
-
 
 if __name__ == "__main__":
     set_streamlit_page()
