@@ -8,9 +8,6 @@ import numpy as np
 def load_data_in_chunks(file_path, chunk_size=100000):
     chunk_list = []
     for chunk in pd.read_csv(file_path, chunksize=chunk_size, low_memory=False):
-        if not all(col in chunk.columns for col in ['ARRIVAL_TIME', 'DATE', 'ARRIVAL_DELAY', 'DEPARTURE_DELAY']):
-            st.error("Some columns are missing in the dataset")
-            return pd.DataFrame()  # Return empty DataFrame
         chunk['ARRIVAL_TIME'] = pd.to_datetime(chunk['ARRIVAL_TIME'], format='%H:%M:%S')
         chunk['DATE'] = pd.to_datetime(chunk['DATE'])
         chunk['ARRIVAL_DELAY'] = chunk['ARRIVAL_DELAY'].astype(np.float32)
@@ -21,6 +18,7 @@ def load_data_in_chunks(file_path, chunk_size=100000):
 
 # Load dataset and store it in session state if not already present
 if 'df' not in st.session_state:
+    # st.session_state.df = load_data_in_chunks('2015_dataset/merged_1k_sample.csv')
     st.session_state.df = load_data_in_chunks('2015_dataset/merged_full_dataset.csv')
 
 show_pages(
