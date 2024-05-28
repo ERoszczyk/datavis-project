@@ -13,7 +13,7 @@ def clean_data(df):
     required_columns = ['LONGITUDE_x', 'LATITUDE_x', 'LONGITUDE_y', 'LATITUDE_y', 'Percentage Delayed', 'ARRIVAL_TIME', 'DATE']
     if all(column in df.columns for column in required_columns):
         df = df.dropna(subset=required_columns)
-        df['Percentage Delayed'] = pd.to_numeric(df['Percentage Delayed'], errors='coerce').fillna(0)
+        df.loc[:, 'Percentage Delayed'] = pd.to_numeric(df['Percentage Delayed'], errors='coerce').fillna(0)
         df = df.dropna(subset=['Percentage Delayed'])
     else:
         missing_cols = [col for col in required_columns if col not in df.columns]
@@ -21,9 +21,12 @@ def clean_data(df):
         df = pd.DataFrame(columns=required_columns)  # Return an empty DataFrame with required columns
     return df
 
-
 def draw_map_with_mean_delay(df, start_date, end_date, start_time, end_time):
     df = clean_data(df)
+    if df.empty:
+        st.warning("The dataset is empty or missing required columns.")
+        return
+
     mask = (df['DATE'] >= start_date) & (df['DATE'] <= end_date) & (
             pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time >= start_time) & (
                    pd.to_datetime(df['ARRIVAL_TIME'], format='%H:%M:%S').dt.time <= end_time)
@@ -88,6 +91,10 @@ def draw_map_with_mean_delay(df, start_date, end_date, start_time, end_time):
 
 def draw_routes(df, departure_cities, arrival_cities, departure_airports, arrival_airports):
     df = clean_data(df)
+    if df.empty:
+        st.warning("The dataset is empty or missing required columns.")
+        return
+
     if len(departure_cities) > 0:
         df = df[df['CITY_x'].isin(departure_cities)]
     if len(arrival_cities) > 0:
