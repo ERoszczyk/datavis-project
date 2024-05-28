@@ -10,11 +10,17 @@ scale = [[0.0, 'rgb(0,100,0)'], [0.2, 'rgb(34,139,34)'],
 
 def clean_data(df):
     """Clean the dataset by removing or filling NaN values."""
-    df = df.dropna(
-        subset=['LONGITUDE_x', 'LATITUDE_x', 'LONGITUDE_y', 'LATITUDE_y', 'Percentage Delayed', 'ARRIVAL_TIME', 'DATE'])
-    df.loc[:, 'Percentage Delayed'] = pd.to_numeric(df['Percentage Delayed'], errors='coerce').fillna(0)
-    df = df.dropna(subset=['Percentage Delayed'])
+    required_columns = ['LONGITUDE_x', 'LATITUDE_x', 'LONGITUDE_y', 'LATITUDE_y', 'Percentage Delayed', 'ARRIVAL_TIME', 'DATE']
+    if all(column in df.columns for column in required_columns):
+        df = df.dropna(subset=required_columns)
+        df['Percentage Delayed'] = pd.to_numeric(df['Percentage Delayed'], errors='coerce').fillna(0)
+        df = df.dropna(subset=['Percentage Delayed'])
+    else:
+        missing_cols = [col for col in required_columns if col not in df.columns]
+        st.error(f"Missing columns in the dataset: {missing_cols}")
+        df = pd.DataFrame(columns=required_columns)  # Return an empty DataFrame with required columns
     return df
+
 
 def draw_map_with_mean_delay(df, start_date, end_date, start_time, end_time):
     df = clean_data(df)
